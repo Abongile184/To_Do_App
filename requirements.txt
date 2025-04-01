@@ -1,0 +1,54 @@
+1. Task Prioritization and Sorting
+   Feature: Allow users to set priority levels for tasks (e.g., High, Medium, Low) and sort them accordingly.
+   How to do it:
+     Add a dropdown or set of buttons next to each task to select the priority.
+     Use JavaScript to sort tasks based on the selected priority (you could store the priority in a custom attribute or property for each task).
+     Color-code tasks based on priority (e.g., red for high priority, green for low).
+  Bonus: Automatically sort tasks whenever a new task is added or a priority is changed.
+
+
+2. Due Dates & Task Reminders
+   Feature: Let users assign due dates to tasks and show visual reminders when tasks are approaching their deadlines.
+    How to do it:
+    Use a date input field to allow users to select a due date for each task.
+    Store the due date in an array or object for each task.
+    Compare the current date with the task’s due date using JavaScript (e.g., new Date()).
+    Add visual cues like a red border or highlight for overdue tasks.
+Bonus: Show how many days are left until the task is due, or show overdue tasks in a separate list.
+
+3. Task Categories/Tags
+   Feature: Let users organize their tasks by adding categories or tags (e.g., "Work", "Home", "Personal").
+     How to do it:
+     Provide a text input or a dropdown where users can add tags to each task.
+     You could store tags in an array or as a string (comma-separated).
+     Implement a filter to show only tasks belonging to a certain category or tag.
+  Bonus: Use different colors for tasks based on their category or tag.
+
+4. Subtasks
+   Feature: Allow users to break large tasks into smaller subtasks.
+      How to do it:
+      When creating a task, let users add subtasks (use a nested list or input field for each subtask).
+      Each subtask can be marked as complete individually, and the parent task can only be marked as complete when all subtasks are done.
+  Bonus: You could also allow users to reorder subtasks and make them draggable.
+
+5. Search and Filter Tasks
+    Add a search bar that lets users filter tasks by title, category, priority, or due date. 
+    This will help users quickly find tasks from large lists. 
+    Implementation idea: Implement a search function that filters the displayed tasks based on user input.
+    You can use .filter() to filter the array of tasks
+
+6. Undo/Redo Functionality
+     Add the ability for users to undo or redo their actions (like adding, deleting, or editing a task).
+     Implementation idea: Store the previous state of the task list in an array and use JavaScript to 
+     implement undo and redo buttons that revert to a previous state.
+
+7. 10. Drag and Drop
+      Add drag-and-drop functionality to reorder tasks or move them between different categories. 
+      Implementation idea: Use the HTML5 drag-and-drop API to allow users to drag tasks into 
+      different lists or rearrange them in the current list.
+
+8. Customizable Themes
+   Allow users to change the theme of the app (light/dark mode or different color schemes). 
+   This can make your app more visually appealing and personalized.
+   Implementation idea: Use CSS variables to define theme colors and use JavaScript to 
+   toggle between different themes stored in the app's settings.
