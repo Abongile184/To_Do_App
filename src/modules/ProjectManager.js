@@ -3,6 +3,7 @@ import Storage from "../Storage/Storage";
 import TaskDisplay from "../ui/TaskDisplay";
 import UI from "../ui/Ui";
 import DOM from "../dom/DOM";
+import ToDo from "../modules/Todo";
 
 class ProjectManager {
     constructor() {
@@ -76,16 +77,49 @@ class ProjectManager {
     openProject(projectName) {
         const project = this.getProject(projectName);
         if (!project) return;
-        alert('hi there Abongile s Dev Team is working on this feature');
-        /* ✅ Clear existing content and render h2 + button
+        
+        // ✅ Clear existing content and render h2 + button
         const { addtaskbtn, paragraph } = this.dom.renderContent({
             message: `Tasks for ${projectName}`,
             clear: true
         });
 
         // ✅ Ensure the "Add Task" button opens the modal when clicked
-        addtaskbtn.addEventListener('click', () => this.dom.renderForm());
+       // addtaskbtn.addEventListener('click', () => this.dom.renderForm());
+        addtaskbtn.addEventListener('click', (event) =>{
+           
+            this.dom.renderForm()
+            const form = document.querySelector(".input-form"); 
+            if (form) {
+                form.addEventListener("submit", (event) => {
+                    event.preventDefault();   // ✅ Stop page reload
+                    
+                    const title = document.getElementById("input").value.trim();
+                    const description = document.getElementById("textbox").value.trim();
+                    const dueDate = document.getElementById("duedate").value;
+                    const priority = document.getElementById("select").value;
+                    
+                    if (!title || !dueDate || priority === "priority") {
+                        alert("Please fill in all required fields.");
+                        return;}
+                    
+                    // ✅ Create new task & add to current project
+                    const newTask = new ToDo(title, description, dueDate, priority);
+                    project.todos.push(newTask); // Add to this project
+                    this.saveProjects();
 
+                     // ✅ Render task in UI
+                    this.taskDisplay.renderTask(newTask);
+
+                    // ✅ Close modal
+                    const modal = document.getElementById("modal-container");
+                    if (modal) modal.remove();
+                    
+                    console.log(`🆕 Task added to project: ${project.name}`, newTask);
+                }, { once: true }); // ✅ This prevents duplicate listeners
+            }
+                console.log(`ProjectManager ${addtaskbtn}`)
+        })
         // ✅ Render only tasks belonging to the selected project */
         this.renderProjectTasks(project);
     }
@@ -101,10 +135,24 @@ class ProjectManager {
     
 
     deleteProject(index) {
-        this.projects.splice(index, 1); // Remove project
-        this.saveProjects();
-        this.renderProjects();
+    const deletedProject = this.projects[index];
+    const content = document.querySelector(".content");
+
+    // Get the current project displayed
+    const currentTitle = content.querySelector(".task-message")?.textContent || "";
+    const currentProjectName = currentTitle.replace("Tasks for ", "").trim();
+
+    // ❌ If we are viewing the project being deleted, clear UI
+    if (deletedProject.name === currentProjectName) {
+        content.innerHTML = ""; // Clear task area
     }
+
+    // ✅ Remove project from array and storage
+    this.projects.splice(index, 1);
+    this.saveProjects();
+    this.renderProjects();
+    }
+
 
     deleteTaskFromProject(projectName, todoToRemove) {
         const project = this.getProject(projectName);
