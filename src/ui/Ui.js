@@ -1,8 +1,9 @@
 import ToDo from "../modules/Todo";
 import TaskDisplay from "./TaskDisplay"; 
 import Storage from "../Storage/Storage";
-import { isToday, isFuture, parseISO } from "date-fns";  //  Import date-fns
+import { parseISO, isToday, isBefore, isFuture, startOfDay } from "date-fns";
 import Statistics from '../stats/Statistics';
+import notificationSound from '../sound/mixkit-happy-bells-notification.wav';
 
 class UI {
     constructor(domInstance) {
@@ -14,6 +15,12 @@ class UI {
     initialize() {
         //  Load tasks from localStorage immediately
         this.loadTasksFromStorage();
+        this.displayOverDueTasks();
+
+        // 🕒 ✅ Check again every 60 seconds
+    setInterval(() => {
+        this.displayOverDueTasks();
+    }, 60000); 
     
         const inboxButton = document.querySelector('.fa-inbox');
         const todayButton = document.querySelector('.fa-star');
@@ -70,7 +77,7 @@ class UI {
                 this.Statistics();
             })
         }
-        
+
     }
 
     attachAddTaskListener(button) {
@@ -227,9 +234,14 @@ class UI {
                     console.log(editBtn)
                 }
 
-                if (editBtn){
-                    editBtn.disabled = true;
+                if (editBtn) {
+                    editBtn.style.pointerEvents = "none"; // Prevent clicks
+                    editBtn.style.opacity = "0.5";        // Optional: dim it visually
+                    editBtn.title = "Editing disabled";   // Optional: show tooltip
                 }
+
+                console.log(editBtn)
+                
             }
         });
     }
@@ -251,6 +263,70 @@ class UI {
     
         // ✅ Loop through all tasks and render them
         tasks.forEach(task => this.taskDisplay.renderTask(task));
+    }
+
+    displayOverDueTasks() {
+        const tasks = Storage.getTasks(); // 🔍 Get all stored tasks
+        const menu = document.querySelector(".menu-selection");
+        const today = startOfDay(new Date());
+    
+        // ✅ Filter overdue tasks (incomplete + date before today)
+        const overdueTasks = tasks.filter(task => {
+            const taskDate = startOfDay(parseISO(task.dueDate));
+            return isBefore(taskDate, today) && !task.complete;
+        });
+    
+        const existingItem = menu.querySelector(".overdue-menu-item");
+    
+        // ✅ Create the menu item if it doesn't exist
+        if (overdueTasks.length > 0 && !existingItem) {
+            const li = document.createElement("li");
+            li.classList.add("overdue-menu-item");
+            li.innerHTML = `<i class="fa-solid fa-hourglass"></i> Overdue Tasks`;
+    
+            const statsMenuItem = menu.querySelector(".fa-chart-simple")?.parentElement;
+            if (statsMenuItem) {
+                menu.insertBefore(li, statsMenuItem);
+            } else {
+                menu.appendChild(li); // fallback
+            }
+
+            alert('you have tasks  overdue')
+            const sound = new Audio(notificationSound);
+            sound.play()
+            console.log(sound)
+            // ✅ Defer task display until user clicks
+            li.addEventListener("click", () => {
+                this.showOverdueTaskView(overdueTasks);
+    
+                // 🔈 Play sound only after user clicks (to avoid autoplay block)
+                
+            });
+
+            
+        }
+    
+        // ❌ Remove if overdue menu exists but no overdue tasks
+        if (overdueTasks.length === 0 && existingItem) {
+            existingItem.remove();
+        }
+    }
+
+    showOverdueTaskView(overdueTasks) {
+        const contentData = this.dom.renderContent({ message: "All Overdue Task(s)" });
+        this.paragraph = contentData.paragraph;
+    
+        const addTaskBtn = document.querySelector(".button_add");
+        if (addTaskBtn) addTaskBtn.remove();
+    
+        if (overdueTasks.length === 0) {
+            this.paragraph.textContent = "You're all caught up!";
+            return;
+        }
+    
+        overdueTasks.forEach(task => {
+            this.taskDisplay.renderTask(task);
+        });
     }
     
 
