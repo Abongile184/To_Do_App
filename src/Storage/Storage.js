@@ -25,7 +25,7 @@ class Storage {
         
             )
         );
-        console.log(taskData.complete)
+        console.log(ToDo())
     }
 
     updateTaskInStorage(updatedTask) {
